@@ -15,6 +15,7 @@ export default async function handler(req, res) {
   const savedState = cookies.csrfState;
 
   if (!code || !state || state !== savedState) {
+    console.error('Invalid state or missing code:', { code, state, savedState });
     return res.status(400).json({ error: 'Invalid state or missing code' });
   }
 
@@ -46,6 +47,11 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     console.error('TikTok token exchange failed:', err.response?.data || err.message);
+    // Log full error response for debugging
+    if (err.response) {
+      console.error('TikTok error response:', err.response.data);
+    }
     res.status(500).json({ error: 'Failed to exchange code for tokens' });
   }
+  console.log('Cookies received in callback:', cookies);
 }
