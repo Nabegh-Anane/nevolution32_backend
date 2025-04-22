@@ -7,7 +7,8 @@ export default function handler(req, res) {
   res.setHeader("Set-Cookie", `csrfState=${csrfState}; HttpOnly; Path=/; Max-Age=600; Secure; SameSite=Lax`);
 
   const clientKey = process.env.TIKTOK_CLIENT_KEY;
-  const redirectUri = encodeURIComponent(process.env.TIKTOK_REDIRECT_URI);
+ const redirectUri = encodeURIComponent(process.env.TIKTOK_REDIRECT_URI);
+
   const scope = [
     'user.info.basic',
     'user.info.profile',

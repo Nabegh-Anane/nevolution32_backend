@@ -21,14 +21,15 @@ export default async function handler(req, res) {
 
   try {
     const response = await axios.post('https://open.tiktokapis.com/v2/oauth/token/', {
-      client_key: process.env.TIKTOK_CLIENT_KEY,
-      client_secret: process.env.TIKTOK_CLIENT_SECRET,
-      code,
-      grant_type: 'authorization_code',
-      redirect_uri: process.env.TIKTOK_REDIRECT_URI,
-    }, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+        client_key: process.env.TIKTOK_CLIENT_KEY,
+        client_secret: process.env.TIKTOK_CLIENT_SECRET,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: process.env.TIKTOK_REDIRECT_URI,
+      }, {
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
 
     const { access_token, refresh_token, open_id, scope, expires_in } = response.data;
 
