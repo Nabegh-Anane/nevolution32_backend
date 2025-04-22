@@ -1,4 +1,5 @@
 import axios from 'axios';
+import cookie from 'cookie';
 
 export const config = {
   api: {
@@ -9,7 +10,10 @@ export const config = {
 export default async function handler(req, res) {
   const code = req.query.code;
   const state = req.query.state;
-  const savedState = req.cookies?.csrfState;
+
+  // Manually parse cookies from the request header
+  const cookies = cookie.parse(req.headers.cookie || '');
+  const savedState = cookies.csrfState;
 
   if (!code || !state || state !== savedState) {
     return res.status(400).json({ error: 'Invalid state or missing code' });
