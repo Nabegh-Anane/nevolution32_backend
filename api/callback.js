@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   const code = req.query.code;
   const state = req.query.state;
 
-  // Manually parse cookies from the request header
+  // Parse cookies manually (because bodyParser is false)
   const cookies = cookie.parse(req.headers.cookie || '');
   const savedState = cookies.csrfState;
 
@@ -32,9 +32,17 @@ export default async function handler(req, res) {
 
     const { access_token, refresh_token, open_id, scope, expires_in } = response.data;
 
-    res.status(200).json({ access_token, refresh_token, open_id, scope, expires_in });
+    // You can optionally save the tokens in a secure cookie or DB
+    res.status(200).json({
+      message: 'Success! Tokens received',
+      access_token,
+      refresh_token,
+      open_id,
+      scope,
+      expires_in,
+    });
   } catch (err) {
-    console.error('Token error:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Failed to get tokens' });
+    console.error('TikTok token exchange failed:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to exchange code for tokens' });
   }
 }
