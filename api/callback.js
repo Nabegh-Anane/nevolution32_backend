@@ -8,8 +8,7 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  const code = req.query.code;
-  const state = req.query.state;
+  const { code, state } = req.query;
 
   // Parse cookies manually (because bodyParser is false)
   const cookies = cookie.parse(req.headers.cookie || '');
@@ -20,20 +19,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await axios.post('https://open.tiktokapis.com/v2/oauth/token/', {
+    const tokenResponse = await axios.post(
+      'https://open.tiktokapis.com/v2/oauth/token/',
+      {
         client_key: process.env.TIKTOK_CLIENT_KEY,
         client_secret: process.env.TIKTOK_CLIENT_SECRET,
         code,
         grant_type: 'authorization_code',
         redirect_uri: process.env.TIKTOK_REDIRECT_URI,
-      }, {
+      },
+      {
         headers: { 'Content-Type': 'application/json' },
-      });
-      
+      }
+    );
 
-    const { access_token, refresh_token, open_id, scope, expires_in } = response.data;
+    const { access_token, refresh_token, open_id, scope, expires_in } = tokenResponse.data;
 
-    // You can optionally save the tokens in a secure cookie or DB
+    // Optionally save tokens in cookies or DB
     res.status(200).json({
       message: 'Success! Tokens received',
       access_token,
