@@ -1,14 +1,34 @@
-const CLIENT_KEY = 'awfn48k0vef1z2gc';
-const REDIRECT_URI = 'https://nevolution32-backend.vercel.app/api/callback';
-const SCOPES = [
-  'user.info.basic',
-  'video.upload',
-  'user.info.profile',
-  'user.info.stats'
-].join(',');
+// pages/api/auth.js
+
+import { randomBytes } from 'crypto';
 
 export default function handler(req, res) {
-  const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${SCOPES}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=your_custom_state`;
+  const csrfState = randomBytes(16).toString('hex');
+  res.setHeader("Set-Cookie", `csrfState=${csrfState}; HttpOnly; Path=/; Max-Age=600; Secure; SameSite=Lax`);
 
-  res.redirect(authUrl);
+  const clientKey = process.env.TIKTOK_CLIENT_KEY;
+  const redirectUri = encodeURIComponent(process.env.TIKTOK_REDIRECT_URI);
+  const scope = [
+    'user.info.basic',
+    'user.info.profile',
+    'user.info.stats',
+    'video.upload',
+    'video.list'
+  ].join(',');
+
+  const tiktokAuthUrl = `https://www.tiktok.com/v2/auth/authorize/?` +
+    `client_key=${clientKey}` +
+    `&response_type=code` +
+    `&scope=${scope}` +
+    `&redirect_uri=${redirectUri}` +
+    `&state=${csrfState}` +
+    `&disable_auto_auth=1`;
+
+  res.redirect(tiktokAuthUrl);
 }
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
