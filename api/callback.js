@@ -14,6 +14,9 @@ export default async function handler(req, res) {
   const cookies = cookie.parse(req.headers.cookie || '');
   const savedState = cookies.csrfState;
 
+  console.log('Cookies in callback:', cookies);  // Log cookies to ensure csrfState is passed
+  console.log('Received state in query:', state);  // Log the state from the query
+
   if (!code || !state || state !== savedState) {
     console.error('Invalid state or missing code:', { code, state, savedState });
     return res.status(400).json({ error: 'Invalid state or missing code' });
@@ -53,5 +56,4 @@ export default async function handler(req, res) {
     }
     res.status(500).json({ error: 'Failed to exchange code for tokens' });
   }
-  console.log('Cookies received in callback:', cookies);
 }
